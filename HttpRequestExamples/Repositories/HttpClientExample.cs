@@ -1,6 +1,5 @@
 ﻿using HttpRequestExamples.Interfaces;
 using HttpRequestExamples.Models;
-using System.Net;
 using System.Text.Json;
 
 namespace HttpRequestExamples.Repositories
@@ -10,7 +9,10 @@ namespace HttpRequestExamples.Repositories
         private readonly IConfiguration _configuration;
         private readonly string _baseUri;
 
-        private static HttpClient _httpClient = new HttpClient();
+        private static HttpClient _httpClient = new HttpClient(new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(1)
+        });
 
         public HttpClientExample(IConfiguration configuration)
         {
@@ -24,16 +26,17 @@ namespace HttpRequestExamples.Repositories
             try
             {
                 var response = await _httpClient.GetAsync($"{_baseUri}currentprice.json");
-                response.EnsureSuccessStatusCode();
 
-                var btcCurrentPrice = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
-                return btcCurrentPrice;
+                var btcContent = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
+                return btcContent;
             }
             catch (Exception ex)
             {
                 return await Task.FromException<BtcContent>(ex);
             }
         }
+
+        #region Example of how NOT to use the HttpClient;
 
         // This is NOT the recommended way to use HttpClient;
         public async Task<BtcContent?> GetBtcContentWithUsing()
@@ -43,10 +46,9 @@ namespace HttpRequestExamples.Repositories
                 using (var httpClient = new HttpClient())
                 {
                     var response = await httpClient.GetAsync($"{_baseUri}currentprice.json");
-                    response.EnsureSuccessStatusCode();
 
-                    var btcCurrentPrice = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
-                    return btcCurrentPrice;
+                    var btcContent = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
+                    return btcContent;
                 }
             }
             catch (Exception ex)
@@ -54,21 +56,6 @@ namespace HttpRequestExamples.Repositories
                 return await Task.FromException<BtcContent>(ex);
             }
         }
-
-        // This is NOT the recommended way to use HttpClient;
-        public async Task<List<int>> GetGoogle()
-        {
-            var listStatusCode = new List<int>();
-
-            for (int i = 0; i < 10; i++)
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    var response = await httpClient.GetAsync("https://www.google.com");
-                    listStatusCode.Add((int)response.StatusCode);
-                }
-            }
-            return listStatusCode;
-        }
+        #endregion
     }
 }

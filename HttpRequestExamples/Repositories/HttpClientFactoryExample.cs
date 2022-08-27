@@ -26,10 +26,26 @@ namespace HttpRequestExamples.Repositories
 
                 var apiUrl = $"{_baseUri}currentprice.json";
                 var response = await client.GetAsync(apiUrl);
-                response.EnsureSuccessStatusCode();
 
-                var btcCurrentPrice = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
-                return btcCurrentPrice;
+                var btcContent = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
+                return btcContent;
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromException<BtcContent>(ex);
+            }
+        }
+
+        public async Task<BtcContent?> GetBtcContentWithNamedClient()
+        {
+            try
+            {
+                using var client = _httpClientFactory.CreateClient("coinDeskApi");
+
+                var response = await client.GetAsync("currentprice.json");
+
+                var btcContent = JsonSerializer.Deserialize<BtcContent>(await response.Content.ReadAsStringAsync());
+                return btcContent;
             }
             catch (Exception ex)
             {

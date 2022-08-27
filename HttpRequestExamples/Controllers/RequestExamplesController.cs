@@ -40,14 +40,14 @@ namespace HttpRequestExamples.Controllers
             }
         }
 
-        [HttpGet("GetWithHttpClientWithUsing")]
+        [HttpGet("GetWithIHttpClientFactory")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetWithHttpClientWithUsing()
+        public async Task<IActionResult> GetWithWithIHttpClientFactory()
         {
             try
             {
-                var btcContent = await _httpClientExample.GetBtcContentWithUsing();
+                var btcContent = await _httpClientFactoryExample.GetBtcContent();
 
                 return Ok(_mapper.Map<BtcDto>(btcContent));
             }
@@ -57,16 +57,16 @@ namespace HttpRequestExamples.Controllers
             }
         }
 
-        [HttpGet("GetGoogle")]
+        [HttpGet("GetWithIHttpClientFactoryWithNamedClient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetGoogle()
+        public async Task<IActionResult> GetWithIHttpClientFactoryWithNamedClient()
         {
             try
             {
-                var result = await _httpClientExample.GetGoogle();
+                var btcContent = await _httpClientFactoryExample.GetBtcContentWithNamedClient();
 
-                return Ok(result);
+                return Ok(_mapper.Map<BtcDto>(btcContent));
             }
             catch (Exception ex)
             {
@@ -74,14 +74,15 @@ namespace HttpRequestExamples.Controllers
             }
         }
 
-        [HttpGet("GetWithWithIHttpClientFactory")]
+        [Obsolete]
+        [HttpGet("GetWithHttpClientWithUsing")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetWithWithIHttpClientFactory()
+        public async Task<IActionResult> GetWithHttpClientWithUsing()
         {
             try
             {
-                var btcContent = await _httpClientFactoryExample.GetBtcContent();
+                var btcContent = await _httpClientExample.GetBtcContentWithUsing();
 
                 return Ok(_mapper.Map<BtcDto>(btcContent));
             }
