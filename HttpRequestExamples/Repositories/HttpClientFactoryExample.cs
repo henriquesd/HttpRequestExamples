@@ -22,7 +22,7 @@ namespace HttpRequestExamples.Repositories
         {
             try
             {
-                using var client = _httpClientFactory.CreateClient();
+                var client = _httpClientFactory.CreateClient();
 
                 var apiUrl = $"{_baseUri}currentprice.json";
                 var response = await client.GetAsync(apiUrl);
@@ -40,7 +40,7 @@ namespace HttpRequestExamples.Repositories
         {
             try
             {
-                using var client = _httpClientFactory.CreateClient("coinDeskApi");
+                var client = _httpClientFactory.CreateClient("coinDeskApi");
 
                 var response = await client.GetAsync("currentprice.json");
 
